@@ -1,5 +1,4 @@
-module.exports = function logger(req, res, next) {
-  console.log(`body : `, req.body);
+module.exports = function logger(req, _, next) {
   console.log(`logger : ${req.url}`);
   next();
 };

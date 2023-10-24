@@ -1,23 +1,26 @@
 const express = require("express");
+const { passport, memberRouter } = require("./router/memberRouter");
 const bodyParser = require("body-parser");
+const session = require("express-session");
+
 const app = express();
 
+app.use(
+  session({
+    secret: "my_secret",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// app.use(require("./middleware/logger"));
+app.use(require("./middleware/logger"));
 app.use(express.static("public"));
-app.use("/user", require("./route/memberRouter"));
-
-app.get("/", (req, res) => {
-  res.status(200).sendFile(require("./public/index.html"));
-});
-
-app.post("/", (req, res) => {
-  const { body } = req.body;
-  console.log(body);
-  res.status(200).send();
-});
+app.use("/member", memberRouter);
 
 app.listen(3000, () => {
   console.log("server start!");

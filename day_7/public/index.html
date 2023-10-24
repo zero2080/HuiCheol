@@ -1,11 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <script>
+      // 커스텀 태그의 기능을 담은 클래스를 정의합니다.
+      class CustomTag extends HTMLElement {
+        constructor() {
+          super(); // 부모 클래스의 constructor를 호출합니다.
+          const shadow = this.attachShadow({ mode: "open" });
+          this.root = document.createElement("div");
+          shadow.appendChild(this.root);
+        }
+
+        add(text) {
+          this.root.appendChild(document.createTextNode(text));
+          this.root.appendChild(document.createElement("hr"));
+        }
+      }
+
+      // 커스텀 태그를 등록합니다.
+      customElements.define("custom-tag", CustomTag);
+    </script>
   </head>
   <body>
-    <h1>하이</h1>
+    <div method="POST" action="/member/login">
+      <input type="email" id="email" placeholder="이메일" />
+      <input type="password" id="password" placeholder="비밀번호" />
+      <button onClick="login()">"로그인"</button>
+      <br />
+      <br />
+      <custom-tag></custom-tag>
+    </div>
   </body>
+  <script>
+    const root = document.getElementsByTagName("custom-tag")[0];
+    async function login() {
+      const body = {};
+      body.email = document.getElementById("email").value;
+      body.password = document.getElementById("password").value;
+
+      const response = await fetch("/member/login", {
+        headers: new Headers({ "Content-Type": "application/json" }),
+        method: "POST",
+        body: JSON.stringify(body),
+      });
+
+      let result = await response.json();
+      if (response.ok) {
+        root.add(`${new Date().toLocaleString()} - 로그인 성공`);
+      } else {
+        root.add(`${new Date().toLocaleString()} - 로그인 실패`);
+      }
+    }
+  </script>
 </html>
