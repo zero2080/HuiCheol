@@ -16,7 +16,7 @@ const userRepository = [
 
 app.use(
   session({
-    secret: "my_server",
+    secret: "my_secret",
     resave: false,
     saveUninitialized: false,
   })
@@ -33,6 +33,7 @@ passport.use(
     if (user && user.password === password) {
       return done(null, user);
     }
+
     return done(null, false);
   })
 );
