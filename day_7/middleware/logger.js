@@ -1,4 +1,6 @@
 module.exports = function logger(req, _, next) {
-  console.log(`logger : ${req.url}`);
+  console.log(
+    `${new Date().toISOString()} - LOGGER : [${req.method}] - ${req.url}`
+  );
   next();
 };

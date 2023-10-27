@@ -1,5 +1,6 @@
 const express = require("express");
-const { passport, memberRouter } = require("./router/memberRouter");
+const memberRouter = require("./router/memberRouter");
+const { passport } = require("./middleware/authenticator");
 const bodyParser = require("body-parser");
 const session = require("express-session");
 
