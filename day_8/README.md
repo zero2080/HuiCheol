@@ -10,7 +10,9 @@
 
 - `express` : 웹 서버를 만들어주는 `nodejs` 프레임워크 [[공식문서](https://expressjs.com/ko)]
 - `mocha` : 테스트 코드를 실행해주는 테스트 러너 [[공식문서](https://mochajs.org/)]
-- `should` : 테스트 코드를 읽기 쉽게 만들어주는 라이브러리 [[공식문서](https://shouldjs.github.io/)]
+- `chai` : 테스트 코드를 작성할 때 사용하는 라이브러리 [[공식문서](https://www.chaijs.com/)]
+- ~~`should` : 테스트 코드를 읽기 쉽게 만들어주는 라이브러리 [[공식문서](https://shouldjs.github.io/)]~~
+  > `chai` 로 대체 함. `chai` 내부의 `should` 를 사용
 - `supertest` : 익스프레스 테스트용 라이브러리 ( 통합 테스트 ) [[공식문서](https://github.com/ladjs/supertest#readme)]
 - `bcrypt` : 단방향 암호화 라이브러리
 

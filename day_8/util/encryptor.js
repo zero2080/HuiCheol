@@ -7,7 +7,7 @@ function genSart() {
 }
 
 function encrypt(plainText) {
-  return bcrypt.hashSync(plainText, genSart(sartRound));
+  return bcrypt.hashSync(plainText, genSart());
 }
 
 function compare(plainPassword, hashedPassword) {
