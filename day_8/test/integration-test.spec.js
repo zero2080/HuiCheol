@@ -15,34 +15,36 @@ describe("통합 테스트", () => {
         .query(`tel=${this.tel}`)
         .expect("Content-Type", /json/)
         //   .expect("Content-Length", "17")
-        .expect(200)
-        .end((err, result) => {
+        // .expect(200) // HttpStatus 코드
+        // .expect({ name: this.name, tel: this.tel }) // ResponseBody 데이터 검증
+        // .expect(200, { name: this.name, tel: this.tel }) // HttpStatus코드, ResponseBody 데이터 한번에 검증
+        // .end((err, result) => {    // 검증 콜백
+        //   if (err) {
+        //     done(err);
+        //   } else {
+        //     const { name, tel } = result.body;
+        //     name.should.be.equals(this.name);
+        //     tel.should.be.equals(this.tel);
+        //     done();
+        //   }
+        // });
+        .expect(200, { name: this.name, tel: this.tel }, (err, result) => {
           if (err) {
             done(err);
           } else {
             const { name, tel } = result.body;
             name.should.be.equals(this.name);
             tel.should.be.equals(this.tel);
-
             done();
           }
-        });
+        }); // HttpStatus코드, ResponseBody 데이터 검증, 콜백
     });
   });
 
   describe("회원 기능", () => {
     it("회원 가입 : POST /user", (done) => {
       const body = { name: "gecko", id: "gecko", password: "gecko" };
-      request(app)
-        .post("/user")
-        .send(body)
-        .expect(201)
-        .end((err) => {
-          if (err) {
-            done(err);
-          }
-          done();
-        });
+      request(app).post("/user").send(body).expect(201, done); // 콜백에 done을 전달하여 end를 호출하지 않을 수 있음.
     });
 
     it("로그인 : POST /user/login - 성공", (done) => {
