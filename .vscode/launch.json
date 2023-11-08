@@ -10,6 +10,7 @@
       "name": "day_10_debug",
       "envFile": "${workspaceFolder}/day_10/.env",
       "skipFiles": ["<node_internals>/**"],
+      "restart": true,
       "program": "${workspaceFolder}/day_10/index.js"
     }
   ]
