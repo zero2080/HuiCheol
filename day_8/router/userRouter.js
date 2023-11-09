@@ -27,6 +27,7 @@ router.post("/login", async (req, res) => {
         return { resource: { accessToken: generateToken(u.toJsonObject()) } };
       }
     });
+  console.log(result);
   if (!result) {
     res.status(401).json({ resource: { code: "0000", message: "login fail" } });
   }
