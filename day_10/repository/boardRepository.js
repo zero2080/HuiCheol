@@ -1,34 +1,53 @@
 const Board = require("../model/Board");
 const userRepository = require("./userRepository");
 const { PageResponse } = require("../types/Pageable");
+const conn = require("./connection");
 
-const db = Array.from({ length: 100 }).map(
-  (_, idx) =>
-    new Board(
-      idx,
-      `title_${idx}`,
-      `content_${idx}`,
-      userRepository.findById(idx)
-    )
-);
+const query = {
+  findById: "SELECT * FROM `board` WHERE `id`=?",
+  findAll: "SELECT * FROM `board`",
+  save: "INSERT INTO `board`(`title`, `content`, `writer`,`updated_at`) VALUES (?,?,?,NOW())",
+};
 
 function findById(id) {
-  const numId = parseInt(id);
-  if (isNaN(numId)) {
-    return;
-  }
-  return db[numId];
+  return new Promise((res) => {
+    conn.findOne(query.findById, [id]).then((board) => {
+      if (board) {
+        res(new Board(board));
+      } else {
+        res();
+      }
+    });
+  });
 }
 
 function findAll(pageRequest) {
-  return pageRequest
-    ? new PageResponse(
-        pageRequest.pageNo,
-        pageRequest.pageSize,
-        db.length,
-        db.slice(pageRequest.offset, pageRequest.limit)
-      ).toJSON()
-    : db;
+  let orderBy = "";
+  if (pageRequest.orderBy) {
+    orderBy = ` ORDER BY ${pageRequest.orderBy.join(",")}`;
+  }
+  return new Promise((res) => {
+    conn
+      .execute("SELECT COUNT(*) AS `total_count` FROM `board`")
+      .then(([[{ total_count }]]) => {
+        console.log("count : ", total_count);
+        conn
+          .findAll(
+            query.findAll + orderBy + " LIMIT ?,?",
+            pageRequest ? [pageRequest.offset, pageRequest.limit] : []
+          )
+          .then((boards) => {
+            res(
+              new PageResponse(
+                pageRequest.pageNo,
+                pageRequest.pageSize,
+                total_count,
+                boards.map((b) => new Board(b).toJSON())
+              )
+            );
+          });
+      });
+  });
 }
 
 function save(board) {
@@ -45,15 +64,14 @@ function save(board) {
   }
 
   if (board.id) {
-    const dbBoard = db.find((b) => b.id === board.id);
+    const dbBoard = conn.find((b) => b.id === board.id);
     if (dbBoard) {
       dbBoard.title = board.title;
       dbBoard.content = board.content;
     }
     return dbBoard;
   } else {
-    board.id = db.length;
-    db.push(board);
+    conn.push(board);
     return board;
   }
 }

@@ -1,27 +1,45 @@
-const password = require("bcrypt").hash("test", 12);
 const User = require("../model/User");
 
-const db = Array.from({ length: 100 }).map(
-  (_, idx) => new User(idx, `test_${idx}`, password, `test_${idx}`)
-);
+const conn = require("./connection");
+
+const query = {
+  findByUsername: "SELECT * FROM `member` WHERE `username`=?",
+  findById: "SELECT * FROM `member` WHERE `id`=?",
+  findAll: "SELECT * FROM `member` LIMIT ?,?",
+  update: "UPDATE `member` SET `password`=?,`nickname`=? WHERE `id`=?",
+  save: "INSERT INTO `member`(`username`, `password`, `nickname`) VALUES (?,?,?)",
+};
 
 function findByUsername(username) {
-  return db.find((u) => u.username === username);
+  return new Promise((res) => {
+    conn.findOne(query.findByUsername, [username]).then((user) => {
+      if (user) {
+        res(new User(user));
+      } else {
+        res();
+      }
+    });
+  });
 }
 
-function findById(id) {
-  const numId = parseInt(id);
-  if (isNaN(numId)) {
+async function findById(id) {
+  let user = await conn.findOne(query.findById, [id]);
+  if (user) {
+    return new User(user);
+  } else {
     return;
   }
-  return db[numId];
 }
 
 function findAll(pageRequest) {
-  return pageRequest ? db.slice(pageRequest.offset, pageRequest.limit) : db;
+  // return pageRequest ? db.slice(pageRequest.offset, pageRequest.limit) : db;
+  return conn.findAll(
+    query.findAll,
+    pageRequest ? [pageRequest.offset, pageRequest.limit] : []
+  );
 }
 
-function save(user) {
+async function save(user) {
   if (!user) {
     throw new Error("user is null");
   }
@@ -30,12 +48,14 @@ function save(user) {
     throw new Error("user is not User");
   }
 
-  const dbUser = db.find((u) => u.username === user.username);
-  if (dbUser) {
-    dbUser.nickname = user.nickname;
-  } else {
-    user.id = db.length;
-    db.push(user);
+  let dbUser = await findByUsername(user.username).then((db) => {
+    db.nickname = user.nickname;
+    return db;
+  });
+
+  if (!dbUser) {
+    dbUser = user;
+    conn.execute(query.update, []);
   }
 }
 

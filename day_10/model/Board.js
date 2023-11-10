@@ -5,13 +5,22 @@ class Board {
   #writer;
   #createdAt;
   #updatedAt;
-  constructor(id, title, content, writer) {
-    this.#id = id;
-    this.#title = title;
-    this.#content = content;
-    this.#writer = writer;
-    this.#createdAt = new Date();
-    this.#updatedAt = new Date();
+  constructor(board, id, title, content, writer) {
+    if (board) {
+      this.#id = board.id;
+      this.#title = board.title;
+      this.#content = board.content;
+      this.#writer = board.writer;
+      this.#createdAt = board.created_at;
+      this.#updatedAt = board.updated_at;
+    } else {
+      this.#id = id;
+      this.#title = title;
+      this.#content = content;
+      this.#writer = writer;
+      this.#createdAt = new Date();
+      this.#updatedAt = new Date();
+    }
   }
 
   set id(value) {

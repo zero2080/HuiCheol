@@ -5,15 +5,15 @@ const pageMiddleware = require("../middleware/pageable");
 
 const boardRepository = require("../repository/boardRepository");
 
-router.get("/", pageMiddleware, (req, res) => {
+router.get("/", pageMiddleware, async (req, res) => {
   const { pageRequest } = req;
-  const result = boardRepository.findAll(pageRequest);
-  res.json(result);
+  const result = await boardRepository.findAll(pageRequest);
+  res.json(result.toJSON());
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const { id } = req.params;
-  const result = boardRepository.findById(id);
+  const result = await boardRepository.findById(id);
   if (result) {
     res.json(result.toJSON());
   } else {
@@ -21,11 +21,11 @@ router.get("/:id", (req, res) => {
   }
 });
 
-router.post("/", authFilter, (req, res) => {
+router.post("/", authFilter, async (req, res) => {
   const { title, content } = req.body;
-  const board = new Board(null, title, content, req.authorization);
+  const board = new Board(null, null, title, content, req.authorization);
 
-  const result = boardRepository.save(board);
+  const result = await boardRepository.save(board);
   res.json(result.toJSON());
 });
 

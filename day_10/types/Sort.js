@@ -6,8 +6,8 @@ class Sort {
     this.#direction = direction.toLowerCase() === "desc" ? "desc" : "asc";
   }
 
-  get orderBy() {
-    return `${this.#target} ${this.#direction}`;
+  get direction() {
+    return this.#direction;
   }
 
   get target() {

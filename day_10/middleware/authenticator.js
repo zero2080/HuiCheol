@@ -6,11 +6,12 @@ const {
   ACCESS_EXPIRES,
   REFRESH_EXPIRES,
 } = process.env;
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const InvalidTokenError = require("../errors/InvalidTokenError");
 const repository = require("../repository/userRepository");
 
-function authFilter(req, res, next) {
+async function authFilter(req, res, next) {
   try {
     let authorization = req.header("Authorization");
     let parseToken = null;
@@ -50,7 +51,7 @@ function authFilter(req, res, next) {
       }
     }
 
-    const user = repository.findById(parseToken.id);
+    const user = await repository.findById(parseToken.id);
 
     if (!user) {
       res.status(403).end();
@@ -65,10 +66,16 @@ function authFilter(req, res, next) {
   }
 }
 
-function authenticator(req, res) {
+async function authenticator(req, res) {
   const { body } = req;
 
-  const user = repository.findByUsername(body.username);
+  const user = await repository.findByUsername(body.username);
+
+  if (!bcrypt.compareSync(body.password, user.password)) {
+    res.cookie("refreshToken", "", { maxAge: 0 });
+    res.status(403).end();
+    return;
+  }
 
   const accessToken = generateAccessToken({ id: user.id });
   const refreshToken = generateRefreshToken({ id: user.id });

@@ -8,17 +8,17 @@ Content-Type: application/json
 }
 
 ### 게시글 조회
-GET http://localhost:3000/board/0
+GET http://localhost:3000/board/1
 
 
 ### 게시글 목록
-GET http://localhost:3000/board?pageNo=51&pageSize=2&sort=createdAt,desc&updatedAt,desc
+GET http://localhost:3000/board?pageNo=1&pageSize=2&sort=created_at,desc&sort=updated_at,desc
 content-type: application/json
 
 ### 게시글 작성
 POST http://localhost:3000/board
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MCwiaWF0IjoxNjk5MzUwNzQ5LCJleHAiOjE2OTkzNTI1NDksImlzcyI6Im15LXNlcnZpY2UifQ.zZqxq-bM54JS6Ey4O1aiyR5xTETCe89pU3nOLME0mvU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjk5NjA0OTcwLCJleHAiOjE2OTk2MDY3NzAsImlzcyI6Im15LXNlcnZpY2UifQ.mgFj2kRKUxmWQPOCbl7R2e_uZImaw32rQUZPHRFrqFE
 
 {
     "title":"글제목스",

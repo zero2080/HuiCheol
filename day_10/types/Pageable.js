@@ -41,11 +41,11 @@ class Page {
   }
 
   get offset() {
-    return (this.#pageNo - 1) * this.#pageSize;
+    return `${(this.#pageNo - 1) * this.#pageSize}`;
   }
 
   get limit() {
-    return this.#pageNo * this.#pageSize;
+    return `${this.#pageNo * this.#pageSize}`;
   }
 }
 class PageRequest extends Page {
@@ -75,7 +75,7 @@ class PageRequest extends Page {
   }
 
   get orderBy() {
-    return this.#sort.orderBy;
+    return this.#sort.flatMap((a) => `${a.target} ${a.direction}`);
   }
 }
 

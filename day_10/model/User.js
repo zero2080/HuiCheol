@@ -1,10 +1,17 @@
 class User {
   #password;
-  constructor(id, username, password, nickname) {
-    this._id = id;
-    this._username = username;
-    this.#password = password;
-    this._nickname = nickname;
+  constructor(user, id, username, password, nickname) {
+    if (!user) {
+      this._id = id;
+      this._username = username;
+      this.#password = password;
+      this._nickname = nickname;
+    } else {
+      this._id = user.id;
+      this._username = user.username;
+      this.#password = user.password;
+      this._nickname = user.nickname;
+    }
     this._createdAt = new Date();
     this._updatedAt = new Date();
   }
