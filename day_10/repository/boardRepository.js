@@ -42,7 +42,7 @@ function findAll(pageRequest) {
                 pageRequest.pageNo,
                 pageRequest.pageSize,
                 total_count,
-                boards.map((b) => new Board(b).toJSON())
+                boards
               )
             );
           });
