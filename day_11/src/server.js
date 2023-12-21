@@ -1,36 +1,37 @@
 const express = require("express");
 const User = require("./models/users.model");
-const passport = require("./config/passport");
+const { passport, authFilter } = require("./config/passport");
 const cookieSession = require("cookie-session");
 const path = require("path");
 const { default: mongoose } = require("mongoose");
+
 const app = express();
+require("dotenv").config();
 
 app.use(
   cookieSession({
     name: "cookie-session-name",
-    keys: ["secret_key1", "secret_key2"],
+    keys: ["secret_key"],
   })
 );
 
-// app.use(cookieSession({}));
+app.use(function (req, _, next) {
+  if (req.session && !req.session.regenerate) {
+    req.session.regenerate = (cb) => {
+      cb();
+    };
+  }
 
-app.use((req, res, next) => {
-  if (req.session) {
-    if (!req.session.regenerate) {
-      req.session.regenerate = (cb) => cb();
-    }
-
-    if (!req.session.save) {
-      req.session.save = (cb) => cb();
-    }
+  if (req.session && !req.session.save) {
+    req.session.save = (cb) => {
+      cb();
+    };
   }
   next();
 });
 
 app.use(passport.initialize());
 app.use(passport.session());
-require("./config/passport");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -38,11 +39,10 @@ app.use(express.urlencoded({ extended: false }));
 //4NbD8SSMrmnCjPYU
 
 app.use("/static", express.static(path.join(__dirname, "public")));
+
 mongoose.set("strictQuery", false);
 mongoose
-  .connect(
-    "mongodb+srv://zero2080:4NbD8SSMrmnCjPYU@cluster0.zq4j480.mongodb.net/?retryWrites=true&w=majority"
-  )
+  .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("mongodb connected");
   })
@@ -50,22 +50,12 @@ mongoose
     console.error(err);
   });
 
-app.post("/login", (req, res, next) => {
-  console.log("login");
-  passport.authenticate("local", (err, user, info) => {
-    console.log("authenticate");
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      // console.log("not found authenticate");
-      return res.status(400).json(info);
-    }
-    req.logIn(user, (err) => {
-      if (err) return next(err);
-      res.redirect("/");
-    });
-  })(req, res, next);
+app.post("/login", authFilter, (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json({ message: "success" });
+  } else {
+    res.status(401).json({ message: "fail" });
+  }
 });
 
 app.post("/signup", async (req, res) => {
@@ -75,7 +65,6 @@ app.post("/signup", async (req, res) => {
     await user.save();
     return res.status(200).json({ message: "success" });
   } catch (e) {
-    console.error(e);
     return res.status(400).json({ message: "fail" });
   }
 });

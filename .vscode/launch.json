@@ -12,6 +12,15 @@
       "skipFiles": ["<node_internals>/**"],
       "restart": true,
       "program": "${workspaceFolder}/day_10/index.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "day_11_debug",
+      "envFile": "${workspaceFolder}/day_11/.env",
+      "skipFiles": ["<node_internals>/**"],
+      "restart": true,
+      "program": "${workspaceFolder}/day_11/src/server.js"
     }
   ]
 }
